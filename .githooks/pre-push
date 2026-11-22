@@ -1,0 +1,17 @@
+#!/bin/sh
+
+reject() {
+    printf 'pre-push: %s\n' "$1" >&2
+    exit 1
+}
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+    #An all-zero remote SHA means the branch does not exist yet, so the first push that creates main is allowed.
+    case "$remote_sha" in
+        *[!0]*) [ "$remote_ref" = "refs/heads/main" ] && reject "Pushing to or deleting main is blocked. Open a pull request instead." ;;
+  esac
+done
+
+[ "${CRM_HOOK_TEST:-}" = "1" ] && exit 0
+
+sh scripts/test-hooks.sh || reject "Hook tests failed. Push cancelled."
