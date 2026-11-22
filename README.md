@@ -33,7 +33,7 @@ The user interface is in Polish.
 ## Repository structure
 
 ```text
-crm-rocket/
+MERN-Rocket/
 ├── .githooks/            # commit-msg, pre-commit and pre-push hooks
 ├── .github/rulesets/     # main branch protection, kept as code
 ├── docs/architecture.md  # architecture and security model
@@ -46,8 +46,8 @@ crm-rocket/
 Requirements: Git and [gitleaks](https://github.com/gitleaks/gitleaks) (the pre-commit hook refuses to commit without it).
 
 ```bash
-git clone https://github.com/Harrysad/crm-rocket.git
-cd crm-rocket
+git clone https://github.com/Harrysad/MERN-Rocket.git
+cd MERN-Rocket
 git config core.hooksPath .githooks
 sh scripts/test-hooks.sh
 ```
