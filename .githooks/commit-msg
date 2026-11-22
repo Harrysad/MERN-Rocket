@@ -11,9 +11,9 @@ reject() {
   exit 1
 }
 
-# Checked on every line, comments included: with `git commit -F` comment
-# lines are not stripped and would end up in history.
-if printf '%s\n' "$message" | grep -qiE '^[[:space:]]*#?[[:space:]]*co-authored-by:'; then
+# Checked on the whole file, comments and scissors included: with -F or -m git strips
+# neither, so such a line would end up in history. Diff lines start with +, - or a space.
+if grep -qiE '^(# ?)?co-authored-by[[:space:]]*:' "$msg_file"; then
   reject "Co-Authored-By lines are not allowed in this repository."
 fi
 

@@ -5,11 +5,8 @@ reject() {
   exit 1
 }
 
-staged=$(git diff --cached --name-only --diff-filter=d)
-
-staged_matching() {
-  printf '%s\n' "$staged" | grep -iE "$1"
-}
+# Without quotePath=false, non-ASCII paths (e.g. Polish names) come out quoted and escape the checks.
+staged=$(git -c core.quotePath=false diff --cached --name-only --diff-filter=d)
 
 # The empty root commit is the only way to create main locally.
 if ! git rev-parse --verify -q HEAD > /dev/null && [ -z "$staged" ]; then
@@ -20,14 +17,10 @@ if [ "$(git symbolic-ref --short HEAD 2>/dev/null)" = "main" ]; then
   reject "Committing directly to main is blocked. Create a branch first: git switch -c <name>"
 fi
 
-env_files=$(staged_matching '(^|/)\.env($|\.)' | grep -vE '\.env\.example$')
-if [ -n "$env_files" ]; then
-  reject "Never commit .env files: $env_files"
-fi
-
-ai_files=$(staged_matching '(^|/)(claude|agents|gemini)\.md$|(^|/)\.(claude|cursor|superpowers)/|(^|/)\.(cursorrules|windsurfrules)$|(^|/)\.aider|^\.github/copilot-instructions\.md$|^docs/superpowers/')
-if [ -n "$ai_files" ]; then
-  reject "AI tooling files must not be committed: $ai_files"
+# .gitignore is the single list of files that must never be committed; this catches `git add -f`.
+ignored=$(printf '%s\n' "$staged" | grep . | git -c core.quotePath=false check-ignore --no-index --stdin)
+if [ -n "$ignored" ]; then
+  reject "These files are listed in .gitignore and must not be committed: $ignored"
 fi
 
 if git diff --cached -U0 -- '*.env.example' | grep -qE '^\+[A-Z0-9_]*(SECRET|KEY|TOKEN|PASS)[A-Z0-9_]*=.+'; then
