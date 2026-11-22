@@ -1,20 +1,30 @@
 .env
 .env.*
+*.env
+.envrc
 !.env.example
 *.pem
 *.key
 *.p12
+*.pfx
 *.jks
 
 CLAUDE.md
+CLAUDE.local.md
 AGENTS.md
 GEMINI.md
+.mcp.json
 .claude/
 .cursor/
+.gemini/
+.codex/
+.windsurf/
 .cursorrules
 .windsurfrules
+.clinerules
 .aider*
 .github/copilot-instructions.md
+.github/instructions/
 .superpowers/
 docs/superpowers/
 
